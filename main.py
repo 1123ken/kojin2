@@ -7,6 +7,7 @@ from field import Field
 from Music import MusicPlayer
 import sys
 
+# main.py の handle_events メソッド
 def handle_events(character, message_window):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -19,14 +20,37 @@ def handle_events(character, message_window):
             character.current_direction = direction
 
     # Zキーが押されたら話しかけるアクションを実行
-    if keys[pygame.K_z]:
+    if keys[pygame.K_z] and character.is_near_npc():
         character.talk()
         # メッセージウィンドウにメッセージをセット
         message_window.set_message("テストメッセージ２")
 
     # Xキーが押されたらメッセージウィンドウをクリア
     if keys[pygame.K_x]:
-        message_window.set_message("またな！")
+        message_window.clear()
+
+# MessageWindow クラスの draw メソッド
+# MessageWindow クラスの draw メソッド
+def draw(self):
+    if self.messages and 0 <= self.current_page < len(self.messages) and self.font:
+        pygame.draw.rect(self.screen, (255, 255, 255), (0, 400, 800, 200), 0)
+        message = self.messages[self.current_page]
+        text_surface = self.font.render(message, True, (0, 0, 0))
+        text_rect = text_surface.get_rect(topleft=(10, 420))
+        self.screen.blit(text_surface, text_rect)
+
+        page_text = f"Page: {self.current_page + 1}/{len(self.messages)}"
+        page_surface = self.font.render(page_text, True, (0, 0, 0))
+        page_rect = page_surface.get_rect(topleft=(600, 580))
+        self.screen.blit(page_surface, page_rect)
+    else:
+        # メッセージが空の場合はウィンドウを閉じる
+        self.clear()
+
+# MessageWindow クラスに clear メソッドを追加
+def clear(self):
+    self.messages = []
+    self.current_page = 0
 
 def update_character_position(character, field, SCREEN_WIDTH, SCREEN_HEIGHT):
     max_x = field.map_width * field.tile_size - SCREEN_WIDTH
@@ -74,7 +98,7 @@ def update_character_position(character, field, SCREEN_WIDTH, SCREEN_HEIGHT):
 def main():
     pygame.init()
 
-    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600
+    SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600  # 画面のサイズを設定
     TILE_SIZE = 32
 
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
@@ -84,17 +108,35 @@ def main():
     map_data = [
         [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
         [0, 0, 0, 1, 1, 1, 0, 0, 0, 0,0, 1, 1, 1, 0, 0, 0, 0, 0, 1,1,1,0,0,0],
-        # ... (以降のマップデータは省略)
+        [0, 0, 0, 1, 0, 1, 0, 0, 0, 0,0, 1, 0, 1, 0, 0, 0, 0, 0, 1,0,1,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
+        [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0,0,0,0,0,0],
     ]
 
     npc_positions = [(4, 2), (12, 2), (20, 2)]
 
     character_images = {
-        'up': [pygame.image.load("charaIMG/83_back.gif"), pygame.image.load("charaIMG/83_back2.gif")],
-        'down': [pygame.image.load("charaIMG/83_front.gif"), pygame.image.load("charaIMG/83_front2.gif")],
-        'left': [pygame.image.load("charaIMG/83_left.gif"), pygame.image.load("charaIMG/83_left2.gif")],
-        'right': [pygame.image.load("charaIMG/83_right.gif"), pygame.image.load("charaIMG/83_right2.gif")],
+    'up': [pygame.image.load("charaIMG/83_back.gif"), pygame.image.load("charaIMG/83_back2.gif")],
+    'down': [pygame.image.load("charaIMG/83_front.gif"), pygame.image.load("charaIMG/83_front2.gif")],
+    'left': [pygame.image.load("charaIMG/83_left.gif"), pygame.image.load("charaIMG/83_left2.gif")],
+    'right': [pygame.image.load("charaIMG/83_right.gif"), pygame.image.load("charaIMG/83_right2.gif")],
+    None: []  # None キーを追加し、空の画像リストを設定
     }
+
 
     # MusicPlayer クラスのインスタンスを作成
     music_player = MusicPlayer("bgm/DQ6 木漏れ日の中で.mp3")
@@ -106,7 +148,8 @@ def main():
 
     # 操作キャラクターの初期位置 サイズの設定
     character = Character(5, 5, TILE_SIZE, 4, character_images, field)
-    message_window = MessageWindow(screen, pygame.font.Font(None, 36))
+    font = pygame.font.Font(None, 36)
+    message_window = MessageWindow(screen, font)
 
     running = True
     clock = pygame.time.Clock()
@@ -118,12 +161,12 @@ def main():
         screen.fill((255, 255, 255))  # 背景を白でクリア
 
         field.draw(screen)
+        field.draw_npcs(screen)  # 追加
         character.update_animation()
-        character.draw(screen)  # 修正: screen引数を渡す
-        message_window.draw()
-
+        character.draw(screen, field.camera_x, field.camera_y)
         pygame.display.flip()
         clock.tick(60)
+
 
     music_player.stop()
     pygame.quit()
