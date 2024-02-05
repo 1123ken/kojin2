@@ -6,6 +6,7 @@ from message_window import MessageWindow
 from field import Field
 from Music import MusicPlayer
 import sys
+from character import Character, character_images
 
 # main.py の handle_events メソッド
 def handle_events(character, message_window):
@@ -129,21 +130,11 @@ def main():
 
     npc_positions = [(4, 2), (12, 2), (20, 2)]
 
-    character_images = {
-    'up': [pygame.image.load("charaIMG/83_back.gif"), pygame.image.load("charaIMG/83_back2.gif")],
-    'down': [pygame.image.load("charaIMG/83_front.gif"), pygame.image.load("charaIMG/83_front2.gif")],
-    'left': [pygame.image.load("charaIMG/83_left.gif"), pygame.image.load("charaIMG/83_left2.gif")],
-    'right': [pygame.image.load("charaIMG/83_right.gif"), pygame.image.load("charaIMG/83_right2.gif")],
-    None: []  # None キーを追加し、空の画像リストを設定
-    }
-
-
     # MusicPlayer クラスのインスタンスを作成
     music_player = MusicPlayer("bgm/DQ6 木漏れ日の中で.mp3")
     music_player.play()
 
     # フィールドに使用する画像データの設定
-    # map_data, tile_size, ground_tile_path, wall_tile_path, npc_positionsを指定
     field = Field(map_data, TILE_SIZE, "field/sand.gif", "field/tile.gif", npc_positions)
 
     # 操作キャラクターの初期位置 サイズの設定

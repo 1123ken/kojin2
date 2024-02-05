@@ -1,5 +1,13 @@
 import pygame
 
+character_images = {
+        'up': [pygame.image.load("charaIMG/83_back.gif"), pygame.image.load("charaIMG/83_back2.gif")],
+        'down': [pygame.image.load("charaIMG/83_front.gif"), pygame.image.load("charaIMG/83_front2.gif")],
+        'left': [pygame.image.load("charaIMG/83_left.gif"), pygame.image.load("charaIMG/83_left2.gif")],
+        'right': [pygame.image.load("charaIMG/83_right.gif"), pygame.image.load("charaIMG/83_right2.gif")],
+        None: []  # None キーを追加し、空の画像リストを設定
+    }
+
 class Character:
     def __init__(self, x, y, tile_size, speed, animation_images, field, npc_id=None):
         self.x = x * tile_size
