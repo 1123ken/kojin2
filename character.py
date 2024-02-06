@@ -94,23 +94,6 @@ class Character:
             y_offset = self.height - default_character_image.get_height()
             screen.blit(default_character_image, (self.x - camera_x * self.tile_size + x_offset, self.y - camera_y * self.tile_size + y_offset))
 
-    def talk(self):
-        # キャラクターとNPCとの対話
-        if self.npc_id is not None:
-            npc_id = self.npc_id
-            messages = []
-            
-            # NPCごとの会話処理
-            if npc_id == 1:
-                messages = ["こんにちは！", "私はNPC1です。", "よろしくお願いします。"]
-            elif npc_id == 2:
-                messages = ["おい！", "NPC2だ！", "何か用か？"]
-            elif npc_id == 3:
-                messages = ["やあ！", "NPC3です。", "楽しい冒険を！"]
-
-            # メッセージをセットし、ウィンドウを表示
-            self.field.message_window.set_messages(messages)
-
     def is_near_npc(self):
         # NPCとの距離が一定以下かどうかを判定
         for npc_pos in self.field.npc_positions:
@@ -134,6 +117,13 @@ class Character:
         ]
         if any(new_rect.colliderect(umi_rect) for umi_rect in umi_collision_rects):
             return False  # 壁に当たる場合は移動不可
+
+        # NPCとの接触判定
+        for npc_pos in self.field.npc_positions:
+            npc_x, npc_y = npc_pos
+            npc_rect = pygame.Rect(npc_x * self.tile_size, npc_y * self.tile_size, self.tile_size, self.tile_size)
+            if new_rect.colliderect(npc_rect):
+                return False  # NPCに当たる場合は移動不可
 
         # 他のキャラクターとの当たり判定
         for other_character in self.field.characters:
