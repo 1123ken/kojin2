@@ -15,7 +15,7 @@ class Character:
         self.width = tile_size
         self.height = tile_size
         self.tile_size = tile_size
-        self.speed = speed / 2
+        self.speed = speed
         self.animation_images = {
             direction: [pygame.transform.scale(image, (self.tile_size, self.tile_size)) for image in images]
             for direction, images in animation_images.items()}
@@ -26,6 +26,8 @@ class Character:
         self.last_animation_time = pygame.time.get_ticks()
         self.field = field
         self.npc_id = npc_id
+        # Fieldに自分を追加
+        self.field.add_character(self)
 
     def update(self, max_x, max_y):
         # キー入力の処理
@@ -48,42 +50,14 @@ class Character:
 
         if keys[pygame.K_DOWN] and not keys[pygame.K_UP]:
             new_y += self.speed
-            current_direction = self.directions[pygame.K_DOWN]
 
-        target_npc_position = (new_x // self.tile_size, new_y // self.tile_size)
+        # is_valid_move メソッドを使って移動の可否を確認
+        if self.is_valid_move(new_x, new_y):
+            self.x, self.y = new_x, new_y
+            target_npc_position = (self.x // self.tile_size, self.y // self.tile_size)
 
-        if current_direction == 'up' and keys[pygame.K_z] and self.y > 0:
-            if target_npc_position in self.field.npc_positions:
-                self.talk()
-
-        new_rect = pygame.Rect(new_x, new_y, self.width, self.height)
-        wall_collision_rects = [
-            pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size)
-            for y in range(self.field.map_height) for x in range(self.field.map_width) if self.field.map_data[y][x] == 1
-        ]
-
-        # 壁との当たり判定
-        if not any(new_rect.colliderect(wall_rect) for wall_rect in wall_collision_rects):
-            npc_collision_rects = [
-                pygame.Rect(npc_x * self.tile_size, npc_y * self.tile_size, self.tile_size, self.tile_size)
-                for npc_x, npc_y in self.field.npc_positions
-            ]
-
-            # NPCとの当たり判定
-            if not any(new_rect.colliderect(npc_rect) for npc_rect in npc_collision_rects):
-                self.x, self.y = new_x, new_y
-
-            # 移動方向があれば、それを設定
-            if current_direction:
-                self.current_direction = current_direction
-
-            # カメラの位置更新
-            self.field.camera_x = max(0, min((self.x + self.width) // self.tile_size, max_x // self.tile_size))
-            self.field.camera_y = max(0, min((self.y + self.height) // self.tile_size, max_y // self.tile_size))
-        else:
-            # 壁に当たった場合もカメラの位置を更新
-            self.field.camera_x = max(0, min((self.x + self.width) // self.tile_size, max_x // self.tile_size))
-            self.field.camera_y = max(0, min((self.y + self.height) // self.tile_size, max_y // self.tile_size))
+        if keys[pygame.K_z] and self.is_near_npc():
+            self.talk()
 
     def update_animation(self):
         # アニメーションの更新
@@ -145,3 +119,27 @@ class Character:
             if distance < self.tile_size:
                 return True
         return False
+
+    def is_valid_move(self, new_x, new_y):
+        # 移動先が有効な場合は True を返す
+        new_rect = pygame.Rect(new_x, new_y, self.width, self.height)
+        
+        # 壁との当たり判定
+        umi_collision_rects = [
+            pygame.Rect(x * self.tile_size, y * self.tile_size, self.tile_size, self.tile_size)
+            #2のumi.gifは接触すると壁判定になる
+            for y in range(self.field.map_height)
+            for x in range(self.field.map_width)
+            if self.field.map_data[y][x] == 2
+        ]
+        if any(new_rect.colliderect(umi_rect) for umi_rect in umi_collision_rects):
+            return False  # 壁に当たる場合は移動不可
+
+        # 他のキャラクターとの当たり判定
+        for other_character in self.field.characters:
+            if other_character != self:  # 自分以外のキャラクターとの衝突判定
+                other_rect = pygame.Rect(other_character.x, other_character.y, other_character.width, other_character.height)
+                if new_rect.colliderect(other_rect):
+                    return False  # 他のキャラクターに当たる場合は移動不可
+
+        return True  # 移動可能な場合は True を返す

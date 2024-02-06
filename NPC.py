@@ -12,14 +12,15 @@ class NPC:
         self.npc_id = npc_id
         self.directions = {pygame.K_UP: 'up', pygame.K_DOWN: 'down', pygame.K_LEFT: 'left', pygame.K_RIGHT: 'right'}
         self.current_direction = 'down'
-        self.current_frame = 0
+        self.current_frame = 0 
+        self.npc_images = [
+            pygame.image.load("charaIMG/ggi.gif"),
+            pygame.image.load("charaIMG/arakure.gif"),
+            pygame.image.load("charaIMG/nouhu.gif")
+        ]
 
     def update(self, max_x, max_y):
         self.update_animation()
-
-    def update_animation(self):
-        # ここにアニメーションの更新処理を追加
-        pass
 
     def draw(self, screen, camera_x, camera_y):
         x_offset = (self.width - self.npc_image.get_width()) // 2
@@ -36,11 +37,11 @@ class NPC:
 
         # NPCごとの会話処理
         if self.npc_id == 1:
-            messages = ["こんにちは！", "私はNPC1です。", "よろしくお願いします。"]
+            messages = ["ふがふが", "私は戦うことはできませんが。", "治療の杖を使うことが出来ます。"]
         elif self.npc_id == 2:
-            messages = ["おい！", "NPC2だ！", "何か用か？"]
+            messages = ["目の前のアラクレに話しかけた", "！？", "ただの　しかばねの　ようだ"]
         elif self.npc_id == 3:
-            messages = ["やあ！", "NPC3です。", "楽しい冒険を！"]
+            messages = ["ん？", "おらに話しかけても", "何もないど"]
 
         # メッセージをセットし、ウィンドウを表示
         self.field.message_window.set_messages(messages)
