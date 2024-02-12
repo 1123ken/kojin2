@@ -30,9 +30,11 @@ def main():
     pygame.init()
 
     SCREEN_WIDTH, SCREEN_HEIGHT = 800, 600  # 画面のサイズを設定
-    TILE_SIZE = 32
-
+    TILE_SIZE = 32                          # マップを構成する画像のサイズを32bitに設定
+    
+    #screenに画面サイズを設定
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+    #タイトル名
     pygame.display.set_caption("ハッサンを操作するゲームみたいなの")
 
     # マップの表示イメージ　0が砂場 1がタイル 2が海（侵入不可）
@@ -58,7 +60,7 @@ def main():
         [2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2],
         [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
     ]
-
+    #NPCの座標を設定　ジジイ　荒くれ　農夫の順番
     npc_positions = [(4, 5), (12, 5), (20, 5)]
 
     # MusicPlayer クラスのインスタンスを作成

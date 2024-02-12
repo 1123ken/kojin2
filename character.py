@@ -1,5 +1,6 @@
 import pygame
 
+#キャラクターの4方向の画像の読み込み　2パターンの画像を交互に動かすアニメーション
 character_images = {
         'up': [pygame.image.load("charaIMG/83_back.gif"), pygame.image.load("charaIMG/83_back2.gif")],
         'down': [pygame.image.load("charaIMG/83_front.gif"), pygame.image.load("charaIMG/83_front2.gif")],
@@ -8,6 +9,7 @@ character_images = {
         None: []  # None キーを追加し、空の画像リストを設定
     }
 
+#操作キャラクターに関するクラス
 class Character:
     def __init__(self, x, y, tile_size, speed, animation_images, field, npc_id=None):
         self.x = x * tile_size
