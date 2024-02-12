@@ -1,6 +1,9 @@
 # message_window.py
 
 import pygame
+from pygame.locals import *
+import os
+import codecs
 
 class MessageWindow:
     EDGE_WIDTH = 4  # 白枠の幅
